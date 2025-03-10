@@ -1,19 +1,39 @@
-from keras_vggface.vggface import VGGFace
-from keras_vggface.utils import preprocess_input
-from keras.preprocessing import image
-import numpy as np
+import cv2
 
-# Load the model
-model = VGGFace(model='resnet50')
+def detect_faces_from_camera():
+    # Load the pre-trained Haar cascade model for face detection
+    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
-# Load and preprocess the image
-img = image.load_img('path_to_your_image.jpg', target_size=(224, 224))
-x = image.img_to_array(img)
-x = np.expand_dims(x, axis=0)
-x = preprocess_input(x)
+    # Start video capture from the first camera device
+    cap = cv2.VideoCapture(0)
 
-# Make a prediction (extract features)
-predictions = model.predict(x)
-print(predictions)
+    while True:
+        # Capture frame-by-frame
+        ret, frame = cap.read()
+        if not ret:
+            print("Failed to grab frame")
+            break
 
-# You would typically use a classifier or some comparison mechanism here to identify the person
+        # Convert frame to grayscale
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+        # Detect faces in the frame
+        faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+
+        # Draw rectangles around the faces
+        for (x, y, w, h) in faces:
+            cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
+
+        # Display the resulting frame
+        cv2.imshow('Face Detection', frame)
+
+        # Press 'q' to close the window
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+    # When everything is done, release the capture
+    cap.release()
+    cv2.destroyAllWindows()
+
+# Example usage
+detect_faces_from_camera()
