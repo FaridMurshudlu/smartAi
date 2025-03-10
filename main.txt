@@ -7,12 +7,18 @@ def detect_faces_from_camera():
     # Start video capture from the first camera device
     cap = cv2.VideoCapture(0)
 
+    # Define the target display size
+    display_size = (800, 480)
+
     while True:
         # Capture frame-by-frame
         ret, frame = cap.read()
         if not ret:
             print("Failed to grab frame")
             break
+
+        # Resize the frame to fit the display
+        frame = cv2.resize(frame, display_size)
 
         # Convert frame to grayscale
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
