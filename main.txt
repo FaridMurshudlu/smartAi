@@ -20,9 +20,12 @@ def detect_faces_from_camera():
         # Detect faces in the frame
         faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
 
-        # Draw rectangles around the faces
+        # Draw rectangles around the faces and add text
         for (x, y, w, h) in faces:
             cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
+            # Define the position for the text (slightly below the face)
+            text_position = (x, y + h + 20)
+            cv2.putText(frame, "Person", text_position, cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
 
         # Display the resulting frame
         cv2.imshow('Face Detection', frame)
